@@ -1,0 +1,55 @@
+html,body,#root {
+  height: 100%;
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  overflow: hidden;
+}
+
+.map{
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+.location-marker {
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+
+.location-icon {
+  font-size: 2em;
+  color: red;
+}
+
+.location-info {
+  position: absolute;
+  top: 50px;
+  right: 50px;
+  width: 400px;
+  min-height: 200px;
+  padding: 20px;
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 10px;
+  font-size: 18px;
+  color: white;
+}
+
+.location-info ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.location-info li {
+  padding: 5px 0;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 1.5em;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
