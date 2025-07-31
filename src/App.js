@@ -21,9 +21,9 @@ function App() {
 
   return (
     <div>
-      { !loading ? <Map eventData={eventData} center = {{ lat: 40.3999, lng: -8.6196 }} zoom = {10} /> :  <h1>Loading</h1> }
+      { !loading ? (<Map eventData={eventData} center = {{ lat: 40.3999, lng: -8.6196 }} zoom = {10} /> ) :  (<h1>Loading</h1> )}
     </div>
   );
 }
-//ola
+
 export default App;
