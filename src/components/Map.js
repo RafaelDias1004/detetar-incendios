@@ -3,10 +3,13 @@ import { useState } from 'react';
 import LocationMarker from './LocationMarker';
 import LocationInfoBox from './LocationInfoBox';
 
+const Category = 8; // Fogo | Wildfires
+
 const containerStyle = {
   width: '100vw',
   height: '100vh',
 };
+
 
 // Função para obter a cidade por reverse geocoding
 const getCityFromCoords = async (lat, lng) => {
@@ -21,6 +24,7 @@ const getCityFromCoords = async (lat, lng) => {
   return city || "Localidade desconhecida";
 };
 
+
 const Map = ({ eventData, center, zoom }) => {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: 'AIzaSyCPoJAXtZU9PdhZuwfSqDA4qTtikSjUHlE',
@@ -34,14 +38,24 @@ const Map = ({ eventData, center, zoom }) => {
   center={center}
   zoom={zoom}
   options={{
-    maxZoom: 12, // ou o valor que quiseres
-    minZoom: 3,  // opcional, para evitar que se afaste demasiado
+    maxZoom: 12,
+    minZoom: 3,  
     streetViewControl: false,
     mapTypeControl: false,
+    restriction: {
+      latLngBounds: {
+        north: 85,
+        south: -85,
+        west: -180,
+        east: 180,
+      },
+      strictBounds: true,
+    },
   }}
 >
       {eventData
-        .filter(event => event.categories[0].id === 8)
+        .filter(event => event.categories[0].id === Category 
+          && event.title.toLowerCase().includes('portugal'))
         .map(event => {
           const lat = event.geometries[0].coordinates[1];
           const lng = event.geometries[0].coordinates[0];

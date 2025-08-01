@@ -1,5 +1,7 @@
 import { useState,useEffect } from "react";
 import Map from './components/Map';
+import Loader from './components/Loader';
+import Header from './components/Header';
 
 function App() {
   const [eventData, setEventData] = useState([]);
@@ -21,7 +23,8 @@ function App() {
 
   return (
     <div>
-      { !loading ? (<Map eventData={eventData} center = {{ lat: 40.3999, lng: -8.6196 }} zoom = {10} /> ) :  (<h1>Loading</h1> )}
+      <Header/>
+      { !loading ? (<Map eventData={eventData} center = {{ lat: 40.3999, lng: -8.6196 }} zoom = {10} /> ) :  (<h1><Loader/></h1> )}
     </div>
   );
 }
