@@ -1,3 +1,5 @@
+import FireIconWithFill from './Burned';
+
 const LocationInfoBox = ({info, onClose}) => {
   return (
     <div className="location-info">
@@ -5,8 +7,8 @@ const LocationInfoBox = ({info, onClose}) => {
         <h2>Informação do evento local</h2>
         <ul>
             <li>Cidade: <b>{info.city}</b></li>
-            <li>Título: <b>{info.title}</b></li>
             <li>Data de Início:  <b>{new Date(info.date).toLocaleDateString()}</b></li>
+            <FireIconWithFill percentage={info.percentage} />
         </ul>
     </div>
   )

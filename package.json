@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@googlemaps/markerclusterer": "^2.6.2",
     "@iconify/icons-mdi": "^1.2.48",
     "@iconify/react": "^6.0.0",
     "@react-google-maps/api": "^2.20.7",
