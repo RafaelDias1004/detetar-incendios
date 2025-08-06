@@ -3,59 +3,68 @@ import { Icon } from "@iconify/react";
 import locationIcon from "@iconify/icons-mdi/fire-alert";
 import getCityFromCoords from "./GeoCode";
 
-const Header = ({ eventData, onSelectLocation }) => {
+const Header = ({ eventData, onSelectLocation, mapIsReady }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [uniqueLocations, setUniqueLocations] = useState([]);
 
-  useEffect(() => {
-    const loadLocations = async () => {
-      const seen = new Set();
-      const temp = [];
 
-      const sorted = [...eventData].sort((a, b) => {
-        const confA = a.confidence === "h" ? 3 : a.confidence === "n" ? 2 : 1;
-        const confB = b.confidence === "h" ? 3 : b.confidence === "n" ? 2 : 1;
-        return confB - confA;
-      });
+useEffect(() => {
+  const loadLocations = async () => {
+    const seenCoords = new Set();
+    const seenNames = new Set();
 
-      for (const event of sorted) {
-        const key = `${event.latitude}-${event.longitude}`;
-        if (!seen.has(key)) {
-          seen.add(key);
-          try {
-            const { city, district } = await getCityFromCoords(
-              event.latitude,
-              event.longitude
-            );
-            const name = `${city} - ${district}`;
+    const sorted = [...eventData].sort((a, b) => {
+      const confA = a.confidence === "h" ? 3 : a.confidence === "n" ? 2 : 1;
+      const confB = b.confidence === "h" ? 3 : b.confidence === "n" ? 2 : 1;
+      return confB - confA;
+    });
 
-            // Evita duplicação por nome da localidade
-            if (!temp.find((item) => item.name === name)) {
-              temp.push({
-                name,
-                latitude: event.latitude,
-                longitude: event.longitude,
-                confidence: event.confidence,
-              });
-            }
-          } catch (e) {
-            console.warn("Erro ao buscar cidade:", e);
-          }
-        }
+    // Cria um array de Promises (chamadas paralelas)
+    const locationPromises = sorted.map(async (event) => {
+      const key = `${event.latitude}-${event.longitude}`;
+      if (seenCoords.has(key)) return null;
+
+      try {
+        const { city, district } = await getCityFromCoords(event.latitude, event.longitude);
+        const name = `${city} - ${district}`;
+        if (seenNames.has(name)) return null;
+
+        seenCoords.add(key);
+        seenNames.add(name);
+
+        return {
+          name,
+          latitude: event.latitude,
+          longitude: event.longitude,
+          confidence: event.confidence,
+        };
+      } catch (e) {
+        console.warn("Erro ao buscar cidade:", e);
+        return null;
       }
+    });
 
-      console.log("Localidades únicas carregadas:", temp);
-      setUniqueLocations(temp);
-    };
+    // Espera que todas as chamadas terminem
+    const results = await Promise.all(locationPromises);
 
-    if (eventData.length > 0) loadLocations();
-  }, [eventData]);
+    // Filtra os nulos
+    const validLocations = results.filter((loc) => loc !== null);
+
+    console.log("Localidades únicas carregadas:", validLocations);
+    setUniqueLocations(validLocations);
+  };
+
+  if (eventData.length > 0 && mapIsReady) {
+    loadLocations();
+  }
+}, [eventData, mapIsReady]);
+
 
   return (
     <header className="header">
       <h1>
-        <Icon icon={locationIcon} /> Detetor de Incêndios (Possibilitado pela
-        NASA)
+        <Icon icon={locationIcon} /> 
+        Detetor de Incêndios (Possibilitado pela NASA)
       </h1>
 
       <div className="dropdown-container">

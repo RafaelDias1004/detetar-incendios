@@ -1,5 +1,5 @@
 import spinner from './spinner.gif'
-import { use, useEffect,useState } from 'react'
+import {useEffect,useState } from 'react'
 
 const Loader = () => {
     const [dots, setDots] = useState('.');

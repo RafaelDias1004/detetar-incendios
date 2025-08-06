@@ -7,12 +7,14 @@ import Header from "./components/Header";
 function App() {
   const [eventData, setEventData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [mapReady, setMapReady] = useState(false);
   const mapRef = useRef();
 
   <Map
     eventData={eventData}
     center={{ lat: 40.3999, lng: -8.6196 }}
     zoom={7}
+    onMapReady={() => setMapReady(true)}
     mapRef={mapRef}
   />;
 
@@ -40,7 +42,10 @@ function App() {
 
   return (
     <div>
-    <Header eventData={eventData} onSelectLocation={(location) => {
+    <Header 
+    eventData={eventData} 
+    mapIsReady={mapReady}
+    onSelectLocation={(location) => {
       if (mapRef.current) {
         mapRef.current.panTo({ lat: location.latitude, lng: location.longitude });
         mapRef.current.setZoom(12);
@@ -52,6 +57,7 @@ function App() {
           center={{ lat: 40.3999, lng: -8.6196 }}
           zoom={7}
           mapRef={mapRef}
+          onMapReady={() => setMapReady(true)}
         />
       ) : (
         <h1>

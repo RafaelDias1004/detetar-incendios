@@ -1,5 +1,5 @@
 import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import LocationMarker from './LocationMarker';
 import LocationInfoBox from './LocationInfoBox';
 import getCityFromCoords from './GeoCode';
@@ -9,13 +9,18 @@ const containerStyle = {
   height: '100vh',
 };
 
-
-const Map = ({ eventData, center, zoom, mapRef}) => {
+const Map = ({ eventData, center, zoom, mapRef, onMapReady}) => {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: 'AIzaSyCPoJAXtZU9PdhZuwfSqDA4qTtikSjUHlE',
   });
 
   const [locationInfo, setLocationInfo] = useState(null);
+
+  useEffect(() => {
+    if (isLoaded && onMapReady) {
+      onMapReady();
+    }
+  }, [isLoaded, onMapReady]);
 
   return isLoaded ? (
     <GoogleMap
