@@ -4,6 +4,7 @@ import LocationMarker from './LocationMarker';
 import LocationInfoBox from './LocationInfoBox';
 import getCityFromCoords from './GeoCode';
 
+// Define o estilo do container do mapa (full width and height)
 const containerStyle = {
   width: '100vw',
   height: '100vh',
