@@ -25,51 +25,51 @@ const Header = ({
         return confB - confA;
       });
 
-      // Array para armazenar as localidades únicas
-      const results = [];
-
       // Mapeia os dados para obter a cidade e distrito de cada coordenada
-      for (const event of sorted) {
-        const key = `${event.latitude}-${event.longitude}`;
-        if (seenCoords.has(key)) continue; // Ignora coordenadas repetidas
+      const locationPromises = sorted.map(async (event) => {
+        const key = `${event.latitude}-${event.longitude}`; // Chave única por coordenadas
+        if (seenCoords.has(key)) return null; // Ignora coordenadas repetidas
 
-        //Tenta ober a cidade e distrito usando as coordenadas da função getCityFromCoords
         try {
+          // Obtém cidade e distrito a partir das coordenadas
           const { city, district } = await getCityFromCoords(
             event.latitude,
             event.longitude
           );
 
           const name = `${city} - ${district}`;
-          if (seenNames.has(name)) return null; //Ignora nomes repetidos
+          if (seenNames.has(name)) return null; // Ignora nomes repetidos
 
-          seenCoords.add(key);
-          seenNames.add(name);
+          seenCoords.add(key);     // Marca coordenada como vista
+          seenNames.add(name);     // Marca nome como visto
 
-          // Adiciona a localização única ao array de resultados
-          results.push({
+          return {
             name,
             latitude: event.latitude,
             longitude: event.longitude,
             confidence: event.confidence,
-          });
-
-          // Aguarda um pouco para evitar sobrecarga de requisições
-          await new Promise((res) => setTimeout(res, 50));
+          };
         } catch (e) {
-          console.warn("Erro ao buscar cidade:", e);
+          console.warn("Erro ao buscar cidade:", e); // Erro na API de geocodificação
+          return null;
         }
-      }
-      // Atualiza o estado com as localidades únicas
-      setUniqueLocations(results);
+      });
+
+      // Aguarda que todas as promessas terminem
+      const results = await Promise.all(locationPromises);
+
+      // Remove valores nulos (eventos ignorados)
+      const validLocations = results.filter((loc) => loc !== null);
+
+      console.log("Localidades únicas carregadas:", validLocations);
+      setUniqueLocations(validLocations); // Atualiza o estado com as localidades únicas
     };
 
-    // Carrega as localidades apenas se houver dados de eventos e o mapa estiver pronto
+    // Só carrega se existirem dados e o mapa estiver pronto
     if (eventData.length > 0 && mapIsReady) {
       loadLocations();
     }
-  }, [eventData, mapIsReady]); // Recarrega as localidades quando os dados de eventos ou o estado do mapa mudarem
-
+  }, [eventData, mapIsReady]); // Executa sempre que os dados ou o mapa mudem
   //Interface do Header
   return (
     <header className="header">
